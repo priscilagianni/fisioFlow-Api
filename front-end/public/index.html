@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FisioFlow</title>
+
+  <!-- 🔥 CORRIGIDO: caminho relativo -->
+  <link rel="stylesheet" href="./styles.css">
+</head>
+
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">API REST de fisioterapia</p>
+      <h1>FisioFlow</h1>
+    </div>
+
+    <nav aria-label="Navegação principal">
+      <a href="#inicio">Início</a>
+      <a href="#pacientes">Pacientes</a>
+      <a href="#agendamentos">Agendamentos</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="inicio" class="hero">
+      <div class="hero-content">
+        <p class="eyebrow">Gestão simples para atendimentos</p>
+        <h2>Sua clínica, sem caos</h2>
+        <p>Cadastre seus pacientes e gerencie toda a rotina de atendimentos em um só lugar. Controle os horários de fisioterapia com praticidade, organização e eficiência.</p>
+
+        <div class="actions">
+          <a class="button" href="#pacientes">Gerenciar pacientes</a>
+          <a class="button secondary" href="#agendamentos">Ver agenda</a>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+        <article>
+          <strong id="total-patients">0</strong>
+          <span>pacientes cadastrados</span>
+        </article>
+
+        <article>
+          <strong id="total-appointments">0</strong>
+          <span>agendamentos ativos</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- PACIENTES -->
+    <section id="pacientes" class="section-grid">
+      <div class="panel">
+        <h2>Pacientes</h2>
+
+        <form id="patient-form" class="form">
+          <input type="hidden" id="patient-id">
+
+          <label>Nome
+            <input id="patient-name" type="text" required>
+          </label>
+
+          <label>Telefone
+            <input id="patient-phone" type="text">
+          </label>
+
+          <label>Idade
+            <input id="patient-age" type="number" min="1" max="120" required>
+          </label>
+
+          <label>Diagnóstico
+            <textarea id="patient-diagnosis"></textarea>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="button">Salvar</button>
+            <button type="button" id="cancel-patient-edit" class="button ghost">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Lista de Pacientes</h2>
+        <button id="refresh-patients" class="button secondary">Atualizar</button>
+
+        <div id="patients-list"></div>
+      </div>
+    </section>
+
+    <!-- AGENDAMENTOS -->
+    <section id="agendamentos" class="section-grid">
+      <div class="panel">
+        <h2>Agendamentos</h2>
+
+        <form id="appointment-form" class="form">
+          <input type="hidden" id="appointment-id">
+
+          <label>Paciente
+            <select id="appointment-patient" required></select>
+          </label>
+
+          <label>Data
+            <input id="appointment-date" type="date" required>
+          </label>
+
+          <label>Horário
+            <input id="appointment-time" type="time" required>
+          </label>
+
+          <label>Duração
+            <input id="appointment-duration" type="number" min="1" value="60" required>
+          </label>
+
+          <div class="form-actions">
+            <button type="submit" class="button">Salvar</button>
+            <button type="button" id="cancel-appointment-edit" class="button ghost">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <h2>Agenda</h2>
+
+        <button id="refresh-appointments" class="button secondary">Atualizar</button>
+
+        <input id="appointment-filter-date" type="date">
+
+        <div id="appointments-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast"></div>
+
+  <!-- 🔥 CORRIGIDO: caminho relativo -->
+  <script src="./app.js"></script>
+</body>
+</html>

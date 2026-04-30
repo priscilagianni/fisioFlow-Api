@@ -189,7 +189,7 @@ npm run cy:run
 ```bash
 netstat -ano | findstr :3000
 taskkill /PID <PID> /F
-
+```
 ### Erro no frontend (Failed to fetch)
 
 - Verificar se backend está rodando

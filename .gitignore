@@ -1,0 +1,14 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+
+# Cypress
+cypress/screenshots/
+cypress/videos/
+
+# IDE & OS
+.vscode/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,43 @@
+{
+  "name": "fisioflow",
+  "version": "1.0.0",
+  "description": "API para gerenciamento de pacientes e agendamento de atendimentos de fisioterapia, com foco em regras de negócio e testes automatizados.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "front": "node src/server.js",
+    "full-stack": "npm run dev",
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "test:report": "mochawesome-merge cypress/reports/*.json > cypress/reports/output.json && mochawesome-report-generator cypress/reports/output.json -f report -o cypress/reports",
+    "test:api": "mocha tests/api/**/*.test.js"
+  },
+  "keywords": [
+    "node",
+    "express",
+    "api",
+    "qa",
+    "cypress",
+    "automation",
+    "portfolio"
+  ],
+  "author": "Priscila Gianni",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.21.2",
+    "swagger-ui-express": "^5.0.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "chai": "^4.3.7",
+    "concurrently": "^9.2.1",
+    "cypress": "^14.5.4",
+    "mocha": "^11.7.5",
+    "mochawesome": "^7.1.4",
+    "mochawesome-merge": "^4.4.1",
+    "mochawesome-report-generator": "^6.3.2",
+    "supertest": "^7.2.2"
+  }
+}

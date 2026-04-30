@@ -1,0 +1,237 @@
+{
+  "info": {
+    "name": "FisioFlow API - Coleção QA",
+    "_postman_id": "1cf2ec84-c0a8-4e05-925a-8d88c2d889bd",
+    "description": "Coleção de validação QA cobrindo cenários positivos e negativos.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+
+  "item": [
+
+    {
+      "name": "Criar Paciente",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Maria Souza\",\n  \"phone\": \"(85) 99999-0000\",\n  \"age\": 35\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/patients" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 201 ao criar paciente', () => pm.response.to.have.status(201));",
+            "const json = pm.response.json();",
+            "pm.collectionVariables.set('patientId', json.id);"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Criar Paciente sem Nome",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{ \"age\": 20 }" },
+        "url": { "raw": "{{baseUrl}}/patients" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 400 quando nome não for informado', () => pm.response.to.have.status(400));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Listar Pacientes",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/patients" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 200 ao listar pacientes', () => pm.response.to.have.status(200));",
+            "pm.test('deve retornar uma lista', () => pm.expect(pm.response.json()).to.be.an('array'));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Criar Agendamento",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patientId\": {{patientId}},\n  \"date\": \"2026-04-22\",\n  \"startTime\": \"10:00\",\n  \"duration\": 60\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/appointments" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 201 ao criar agendamento', () => pm.response.to.have.status(201));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Conflito de Agendamento",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patientId\": {{patientId}},\n  \"date\": \"2026-04-22\",\n  \"startTime\": \"10:30\",\n  \"duration\": 60\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/appointments" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 409 quando houver conflito de horário', () => pm.response.to.have.status(409));",
+            "pm.expect(pm.response.json().message).to.eql('Schedule conflict detected');"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Agendamento com Campos Ausentes",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{}" },
+        "url": { "raw": "{{baseUrl}}/appointments" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 400 quando campos obrigatórios estiverem ausentes', () => pm.response.to.have.status(400));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Formato de Hora Inválido",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patientId\": {{patientId}},\n  \"date\": \"2026-04-22\",\n  \"startTime\": \"25:00\",\n  \"duration\": 60\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/appointments" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 400 para formato de hora inválido', () => pm.response.to.have.status(400));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Duração Zero",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patientId\": {{patientId}},\n  \"date\": \"2026-04-22\",\n  \"startTime\": \"08:00\",\n  \"duration\": 0\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/appointments" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 400 quando duração for zero', () => pm.response.to.have.status(400));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Paciente Não Encontrado",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patientId\": 999,\n  \"date\": \"2026-04-22\",\n  \"startTime\": \"08:00\",\n  \"duration\": 60\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/appointments" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 404 quando paciente não existir', () => pm.response.to.have.status(404));"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Data passada não permitida",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patientId\": {{patientId}},\n  \"date\": \"2020-04-10\",\n  \"startTime\": \"08:00\",\n  \"duration\": 60\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/appointments" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 400 para data passada', () => pm.response.to.have.status(400));",
+            "pm.expect(pm.response.json().message).to.eql('Past dates are not allowed');"
+          ]
+        }
+      }]
+    },
+
+    {
+      "name": "Listar Agendamentos por Dia",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{baseUrl}}/appointments/day/2026-04-22" }
+      },
+      "event": [{
+        "listen": "test",
+        "script": {
+          "exec": [
+            "pm.test('deve retornar 200 ao listar agendamentos por dia', () => pm.response.to.have.status(200));",
+            "pm.test('deve retornar uma lista', () => pm.expect(pm.response.json()).to.be.an('array'));"
+          ]
+        }
+      }]
+    }
+
+  ],
+
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" }
+  ]
+}

@@ -11,9 +11,8 @@ function isValidPhone(phone) {
   return /^\(\d{2}\)\s\d{5}-\d{4}$/.test(phone);
 }
 
-// ==========================
 // CREATE PATIENT
-// ==========================
+
 function createPatient(data) {
   if (!data) {
     return { error: { status: 400, message: 'Required fields missing' } };
@@ -29,9 +28,9 @@ function createPatient(data) {
     return { error: { status: 400, message: 'Invalid patient name' } };
   }
 
-  // ==========================
+
   // AGE NORMALIZATION (FIX PRINCIPAL)
-  // ==========================
+ 
   const ageNumber = Number(data.age);
 
   if (data.age === undefined || data.age === null || data.age === '') {
@@ -70,16 +69,14 @@ function createPatient(data) {
   return { data: patient };
 }
 
-// ==========================
 // LIST PATIENTS
-// ==========================
+
 function listPatients() {
   return db.patients;
 }
 
-// ==========================
 // DELETE PATIENT
-// ==========================
+
 function deletePatient(id) {
   const index = db.patients.findIndex(p => p.id === Number(id));
 
@@ -100,9 +97,8 @@ function deletePatient(id) {
   };
 }
 
-// ==========================
 // UPDATE PATIENT (PATCH)
-// ==========================
+
 function updatePatient(id, data) {
   const patient = db.patients.find(p => p.id === Number(id));
 
@@ -141,7 +137,7 @@ function updatePatient(id, data) {
     patient.phone = phone;
   }
 
-  // AGE (FIX AQUI TAMBÉM)
+  // AGE 
   if (data.age !== undefined) {
     const ageNumber = Number(data.age);
 

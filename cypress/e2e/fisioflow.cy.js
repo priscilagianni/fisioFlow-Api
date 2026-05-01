@@ -84,7 +84,7 @@ describe('FisioFlow API - Fluxos Críticos', () => {
     it('deve criar agendamento com sucesso', () => {
       cy.request('POST', '/appointments', {
         patientId,
-        date: getFutureDate(1), // ✅ sempre futuro
+        date: getFutureDate(1), // sempre futuro
         startTime: '08:00',
         duration: 60
       }).then((res) => {
@@ -104,9 +104,8 @@ describe('FisioFlow API - Fluxos Críticos', () => {
     });
 
     it('deve detectar conflito de horário', () => {
-      const date = getFutureDate(2); // ✅ dia isolado para não conflitar com outros testes
+      const date = getFutureDate(2); // dia isolado para não conflitar
 
-      // ✅ encadeado com .then() para garantir ordem
       cy.request('POST', '/appointments', {
         patientId,
         date,
@@ -127,7 +126,7 @@ describe('FisioFlow API - Fluxos Críticos', () => {
     it('deve permitir agendamento sem conflito', () => {
       cy.request('POST', '/appointments', {
         patientId,
-        date: getFutureDate(3), // ✅ dia diferente, sem risco de conflito
+        date: getFutureDate(3), // dia diferente, sem risco de conflito
         startTime: '10:00',
         duration: 30
       }).then((res) => {
@@ -168,14 +167,14 @@ describe('FisioFlow API - Fluxos Críticos', () => {
       });
     });
 
-    it('deve bloquear agendamento em data passada', () => { // ✅ nome corrigido
+    it('deve bloquear agendamento em data passada', () => {
       cy.request({
         method: 'POST',
         url: '/appointments',
         failOnStatusCode: false,
         body: { patientId, date: '2020-04-10', startTime: '08:00', duration: 60 }
       }).then((res) => {
-        expect(res.status).to.eq(400); // ✅ espera rejeição, não 201
+        expect(res.status).to.eq(400); // deve rejeitar datas passadas
         expect(res.body.message).to.eq('Past dates are not allowed');
       });
     });

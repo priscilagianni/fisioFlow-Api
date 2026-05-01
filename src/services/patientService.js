@@ -28,9 +28,6 @@ function createPatient(data) {
     return { error: { status: 400, message: 'Invalid patient name' } };
   }
 
-
-  // AGE NORMALIZATION (FIX PRINCIPAL)
- 
   const ageNumber = Number(data.age);
 
   if (data.age === undefined || data.age === null || data.age === '') {
@@ -137,7 +134,6 @@ function updatePatient(id, data) {
     patient.phone = phone;
   }
 
-  // AGE 
   if (data.age !== undefined) {
     const ageNumber = Number(data.age);
 

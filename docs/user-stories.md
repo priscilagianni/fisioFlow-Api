@@ -169,4 +169,4 @@ Como fisioterapeuta, eu quero visualizar todos os atendimentos do dia.
 - não pode existir sobreposição de horários no mesmo dia  
 - ao deletar um paciente, todos os seus atendimentos devem ser removidos automaticamente  
 - não pode existir atendimento sem paciente válido  
-- nao sera aceita datas passadas
+- nao serão aceitas datas passadas

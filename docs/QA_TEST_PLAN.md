@@ -35,6 +35,7 @@ Validar o funcionamento da API FisioFlow, garantindo:
 - Regras de conflito de horário
 - Validação de campos obrigatórios
 - Validação de horários e duração
+- Não é permitido agendar em datas passadas  
 
 ## Ambiente de Teste
 
@@ -205,10 +206,11 @@ Validar o funcionamento da API FisioFlow, garantindo:
 
 | Campo | Valor |
 |-------|-------|
-| Severidade | Médio |
-| Tipo | Funcional |
-| Regra atual | Permitido |
-| Status esperado | 201 Created |
+| Severidade | Crítico |
+| Tipo | Negativo |
+| Regra | Não é permitido agendar em datas passadas |
+| Status esperado | 400 Bad Request |
+| Resposta | `{ "message": "Past dates are not allowed" }` |
 
 ## Regras de Negócio
 
@@ -225,7 +227,7 @@ Validar o funcionamento da API FisioFlow, garantindo:
 - Duração deve ser maior que 0
 - Hora no formato `HH:MM`
 - Não pode haver conflito de horário
-- Datas passadas são permitidas (atualmente)
+- Datas passadas não são permitidas
 
 ### Conflito de Horário
 

@@ -1,6 +1,7 @@
 describe('FisioFlow API - Testes Automatizados Críticos', () => {
 
   let patientId;
+  let appointmentId;
 
   function getFutureDate(days = 1) {
     const date = new Date();
@@ -107,6 +108,7 @@ describe('FisioFlow API - Testes Automatizados Críticos', () => {
           body: { patientId, date, startTime: '08:30', duration: 60 }
         }).then((res) => {
           expect(res.status).to.eq(409);
+          expect(res.body.message).to.eq('Schedule conflict detected');
         });
       });
     });
@@ -125,6 +127,94 @@ describe('FisioFlow API - Testes Automatizados Críticos', () => {
     it('deve listar agendamentos por dia', () => {
       cy.request('GET', `/appointments/day/${getFutureDate(1)}`).then((res) => {
         expect(res.status).to.eq(200);
+        expect(res.body).to.be.an('array');
+      });
+    });
+
+    it('CT21 - deve atualizar agendamento com sucesso', () => {
+      cy.request('POST', '/appointments', {
+        patientId,
+        date: getFutureDate(4),
+        startTime: '09:00',
+        duration: 45
+      }).then((res) => {
+        appointmentId = res.body.id;
+
+        cy.request('PATCH', `/appointments/${appointmentId}`, {
+          duration: 30
+        }).then((res) => {
+          expect(res.status).to.eq(200);
+          expect(res.body.duration).to.eq(30);
+        });
+      });
+    });
+
+    it('CT22 - deve falhar ao atualizar agendamento inexistente', () => {
+      cy.request({
+        method: 'PATCH',
+        url: '/appointments/999',
+        failOnStatusCode: false,
+        body: { duration: 30 }
+      }).then((res) => {
+        expect(res.status).to.eq(404);
+        expect(res.body.message).to.eq('Appointment not found');
+      });
+    });
+
+    it('CT23 - deve falhar ao atualizar agendamento gerando conflito de horário', () => {
+      const date = getFutureDate(5);
+
+      cy.request('POST', '/appointments', {
+        patientId,
+        date,
+        startTime: '08:00',
+        duration: 60
+      }).then(() => {
+        cy.request('POST', '/appointments', {
+          patientId,
+          date,
+          startTime: '10:00',
+          duration: 60
+        }).then((res) => {
+          appointmentId = res.body.id;
+
+          cy.request({
+            method: 'PATCH',
+            url: `/appointments/${appointmentId}`,
+            failOnStatusCode: false,
+            body: { startTime: '08:30' }
+          }).then((res) => {
+            expect(res.status).to.eq(409);
+            expect(res.body.message).to.eq('Schedule conflict detected');
+          });
+        });
+      });
+    });
+
+    it('CT24 - deve excluir agendamento com sucesso', () => {
+      cy.request('POST', '/appointments', {
+        patientId,
+        date: getFutureDate(6),
+        startTime: '11:00',
+        duration: 30
+      }).then((res) => {
+        appointmentId = res.body.id;
+
+        cy.request('DELETE', `/appointments/${appointmentId}`).then((res) => {
+          expect(res.status).to.eq(200);
+          expect(res.body.message).to.eq('Appointment deleted successfully');
+        });
+      });
+    });
+
+    it('CT25 - deve falhar ao excluir agendamento inexistente', () => {
+      cy.request({
+        method: 'DELETE',
+        url: '/appointments/999',
+        failOnStatusCode: false
+      }).then((res) => {
+        expect(res.status).to.eq(404);
+        expect(res.body.message).to.eq('Appointment not found');
       });
     });
 
@@ -151,6 +241,7 @@ describe('FisioFlow API - Testes Automatizados Críticos', () => {
         body: { patientId, date: '2020-04-10', startTime: '08:00', duration: 60 }
       }).then((res) => {
         expect(res.status).to.eq(400);
+        expect(res.body.message).to.eq('Past dates are not allowed');
       });
     });
 

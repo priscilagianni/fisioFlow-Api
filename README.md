@@ -143,8 +143,8 @@ Request → Routes → Controllers → Services → Response
 
 - Nome obrigatório (somente letras)
 - Idade entre 1 e 120 anos
-- Telefone opcional
-- Diagnóstico opcional
+- Telefone (opcional)
+- Diagnóstico (opcional)
 
 ### Agendamentos
 

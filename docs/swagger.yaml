@@ -1,31 +1,31 @@
 openapi: 3.0.3
-
+ 
 info:
   title: FisioFlow API
   version: 1.0.0
   description: API para gerenciamento de pacientes e agendamentos de fisioterapia
-
+ 
 servers:
   - url: http://localhost:3000
-
+ 
 tags:
   - name: Patients
   - name: Appointments
-
+ 
 paths:
-
+ 
   /patients:
-
+ 
     post:
       tags: [Patients]
       summary: Criar paciente
       description: |
         Cria um novo paciente seguindo as regras de validação:
-
-        - Nome é obrigatório
-        - Nome deve conter apenas caracteres alfabéticos
-        - Idade deve estar entre 1 e 120
-        - Telefone deve seguir o formato (XX) XXXXX-XXXX
+ 
+        - Nome é obrigatório e deve conter apenas caracteres alfabéticos
+        - Idade é obrigatória e deve estar entre 1 e 120
+        - Telefone é opcional e deve seguir o formato (XX) XXXXX-XXXX
+        - Diagnóstico é opcional
       requestBody:
         required: true
         content:
@@ -34,36 +34,57 @@ paths:
               $ref: '#/components/schemas/CreatePatientRequest'
       responses:
         '201':
-          description: Paciente criado com sucesso
+          description: Patient created successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Patient'
         '400':
-          description: Dados do paciente inválidos
+          description: Invalid data
           content:
             application/json:
-              example:
-                message: "Invalid patient data"
-
+              examples:
+                nameMissing:
+                  value:
+                    message: "Patient name is required"
+                nameInvalid:
+                  value:
+                    message: "Invalid patient name"
+                ageMissing:
+                  value:
+                    message: "Patient age is required"
+                ageInvalid:
+                  value:
+                    message: "Invalid age"
+                phoneInvalid:
+                  value:
+                    message: "Invalid phone format. Use (XX) XXXXX-XXXX"
+ 
     get:
       tags: [Patients]
       summary: Listar pacientes
       responses:
         '200':
-          description: Pacientes listados com sucesso
+          description: Patients listed successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Patient'
-
+ 
   /patients/{id}:
-
+ 
     patch:
       tags: [Patients]
       summary: Atualizar paciente
+      description: |
+        Atualiza parcialmente um paciente. Todos os campos são opcionais.
+ 
+        - Nome deve conter apenas caracteres alfabéticos
+        - Idade deve estar entre 1 e 120
+        - Telefone deve seguir o formato (XX) XXXXX-XXXX
+        - Diagnóstico é livre
       parameters:
         - name: id
           in: path
@@ -78,15 +99,36 @@ paths:
               $ref: '#/components/schemas/UpdatePatientRequest'
       responses:
         '200':
-          description: Paciente atualizado com sucesso
+          description: Patient updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Patient'
         '400':
-          description: Dados inválidos
+          description: Invalid data
+          content:
+            application/json:
+              examples:
+                nameInvalid:
+                  value:
+                    message: "Invalid patient name"
+                ageInvalid:
+                  value:
+                    message: "Invalid age"
+                phoneInvalid:
+                  value:
+                    message: "Invalid phone format. Use (XX) XXXXX-XXXX"
         '404':
-          description: Paciente não encontrado
-
+          description: Patient not found
+          content:
+            application/json:
+              example:
+                message: "Patient not found"
+ 
     delete:
       tags: [Patients]
       summary: Deletar paciente
+      description: Remove um paciente e todos os seus agendamentos associados.
       parameters:
         - name: id
           in: path
@@ -95,23 +137,33 @@ paths:
             type: integer
       responses:
         '200':
-          description: Paciente deletado com sucesso
+          description: Patient deleted successfully
+          content:
+            application/json:
+              example:
+                message: "Patient deleted successfully"
         '404':
-          description: Paciente não encontrado
-
+          description: Patient not found
+          content:
+            application/json:
+              example:
+                message: "Patient not found"
+ 
   /appointments:
-
+ 
     post:
       tags: [Appointments]
       summary: Criar agendamento
       description: |
         Cria um novo agendamento seguindo as regras de negócio:
-
+ 
+        - patientId, date, startTime e duration são obrigatórios
         - O paciente deve existir
+        - A data deve estar no formato YYYY-MM-DD
+        - O horário deve estar no formato HH:MM
         - A duração deve ser maior que zero
-        - O horário deve seguir o formato HH:MM
-        - Agendamentos não podem se sobrepor no mesmo dia
-        - Agendamentos não podem ser criados em datas passadas
+        - Não são permitidas datas passadas
+        - Não são permitidos conflitos de horário no mesmo dia
       requestBody:
         required: true
         content:
@@ -120,55 +172,59 @@ paths:
               $ref: '#/components/schemas/CreateAppointmentRequest'
       responses:
         '201':
-          description: Agendamento criado com sucesso
-
+          description: Appointment created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
         '400':
-          description: Dados do agendamento inválidos
+          description: Invalid data
           content:
             application/json:
               examples:
+                missingFields:
+                  value:
+                    message: "patientId, date, startTime and duration are required"
+                invalidDate:
+                  value:
+                    message: "Invalid date format. Use YYYY-MM-DD"
+                pastDate:
+                  value:
+                    message: "Past dates are not allowed"
                 invalidTime:
                   value:
                     message: "Invalid time format. Use HH:MM"
                 invalidDuration:
                   value:
                     message: "Duration must be greater than zero"
-                missingFields:
-                  value:
-                    message: "patientId, date, startTime and duration are required"
-                invalidPastDate:
-                  value:
-                    message: "Past dates are not allowed"
-
         '404':
-          description: Paciente não encontrado
+          description: Patient not found
           content:
             application/json:
               example:
                 message: "Patient not found"
-
         '409':
-          description: Conflito de horário detectado
+          description: Schedule conflict
           content:
             application/json:
               example:
                 message: "Schedule conflict detected"
-
+ 
     get:
       tags: [Appointments]
       summary: Listar agendamentos
       responses:
         '200':
-          description: Agendamentos listados com sucesso
+          description: Appointments listed successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Appointment'
-
+ 
   /appointments/day/{date}:
-
+ 
     get:
       tags: [Appointments]
       summary: Buscar agendamentos por data
@@ -182,26 +238,140 @@ paths:
             description: "Formato ISO (YYYY-MM-DD)"
       responses:
         '200':
-          description: Agendamentos retornados com sucesso
+          description: Appointments returned successfully
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Appointment'
-
+ 
+  /appointments/{id}:
+ 
+    patch:
+      tags: [Appointments]
+      summary: Atualizar agendamento
+      description: |
+        Atualiza parcialmente um agendamento. Todos os campos são opcionais.
+        As mesmas regras de negócio do cadastro se aplicam.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAppointmentRequest'
+      responses:
+        '200':
+          description: Appointment updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+        '400':
+          description: Invalid data
+          content:
+            application/json:
+              examples:
+                invalidDate:
+                  value:
+                    message: "Invalid date format. Use YYYY-MM-DD"
+                pastDate:
+                  value:
+                    message: "Past dates are not allowed"
+                invalidTime:
+                  value:
+                    message: "Invalid time format. Use HH:MM"
+                invalidDuration:
+                  value:
+                    message: "Duration must be greater than zero"
+        '404':
+          description: Appointment not found
+          content:
+            application/json:
+              example:
+                message: "Appointment not found"
+        '409':
+          description: Schedule conflict
+          content:
+            application/json:
+              example:
+                message: "Schedule conflict detected"
+ 
+    delete:
+      tags: [Appointments]
+      summary: Deletar agendamento
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Appointment deleted successfully
+          content:
+            application/json:
+              example:
+                message: "Appointment deleted successfully"
+        '404':
+          description: Appointment not found
+          content:
+            application/json:
+              example:
+                message: "Appointment not found"
+ 
 components:
-
+ 
   schemas:
-
+ 
     CreatePatientRequest:
       type: object
       required: [name, age]
       properties:
         name:
           type: string
-          pattern: "^[A-Za-zÀ-ÿ\\s]+$"
-          example: Maria Souza
+          example: "Maria Souza"
+        age:
+          type: integer
+          example: 35
+        phone:
+          type: string
+          example: "(85) 99999-0000"
+        diagnosis:
+          type: string
+          example: "Lombalgia"
+ 
+    UpdatePatientRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Maria Souza"
+        age:
+          type: integer
+          example: 35
+        phone:
+          type: string
+          example: "(85) 99999-0000"
+        diagnosis:
+          type: string
+          example: "Lombalgia"
+ 
+    Patient:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: "Maria Souza"
         phone:
           type: string
           example: "(85) 99999-0000"
@@ -210,29 +380,18 @@ components:
           example: 35
         diagnosis:
           type: string
-
-    UpdatePatientRequest:
-      type: object
-      properties:
-        name:
+          example: "Lombalgia"
+        createdAt:
           type: string
-        age:
-          type: integer
-
-    Patient:
-      type: object
-      properties:
-        id:
-          type: integer
-        name:
-          type: string
-
+          example: "2026-04-24T10:00:00.000Z"
+ 
     CreateAppointmentRequest:
       type: object
       required: [patientId, date, startTime, duration]
       properties:
         patientId:
           type: integer
+          example: 1
         date:
           type: string
           example: "2026-04-24"
@@ -240,24 +399,49 @@ components:
         startTime:
           type: string
           example: "08:00"
+          description: "Formato HH:MM"
         duration:
           type: integer
           example: 60
-
+          description: "Duração em minutos"
+ 
+    UpdateAppointmentRequest:
+      type: object
+      properties:
+        patientId:
+          type: integer
+          example: 1
+        date:
+          type: string
+          example: "2026-04-24"
+        startTime:
+          type: string
+          example: "08:00"
+        duration:
+          type: integer
+          example: 60
+ 
     Appointment:
       type: object
       properties:
         id:
           type: integer
+          example: 1
         patientId:
           type: integer
+          example: 1
         date:
           type: string
+          example: "2026-04-24"
         startTime:
           type: string
+          example: "08:00"
         duration:
           type: integer
+          example: 60
         endTime:
           type: string
+          example: "09:00"
         createdAt:
           type: string
+          example: "2026-04-24T10:00:00.000Z"

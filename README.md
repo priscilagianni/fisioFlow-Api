@@ -13,12 +13,10 @@ Sistema fullstack para gerenciamento de pacientes e agendamentos de fisioterapia
 
 Inclui:
 
-- API REST com validação de regras de negócio  
-- Interface web (HTML, CSS e JavaScript)  
-- Testes automatizados (API e E2E)  
-- Documentação com Swagger  
-
-> Projeto educacional — dados armazenados em memória (não persistem após reiniciar o servidor).
+- API REST com validação de regras de negócio
+- Interface web (HTML, CSS e JavaScript)
+- Testes automatizados de API e E2E
+- Documentação com Swagger
 
 ---
 
@@ -37,40 +35,45 @@ Demonstrar conhecimentos em:
 ## Requisitos
 
 - Node.js 18+
-- npm 9+
 
 ---
 
-## Instalação e Configuração
+## Instalação
 
 ```bash
-git clone https://github.com/priscilagianni/fisioFlow.git
-cd fisioFlow
+git clone https://github.com/priscilagianni/fisioFlow-Api.git
+cd fisioFlow-Api
 npm install
 npm run dev
 ```
 
-Ao executar `npm run dev`, o frontend será aberto automaticamente em **http://localhost:3000**
+Após iniciar:
+
+- **Frontend:** http://localhost:3000
+- **API:** http://localhost:3000
+- **Swagger:** http://localhost:3000/api-docs
 
 ---
 
-## Como usar
+## Executando testes
 
-Após executar `npm run dev`:
+```bash
+# Abrir Cypress no modo interativo
+npm run cy:open
 
-1. **Frontend** abre automaticamente em: http://localhost:3000
-2. **API** disponível em: http://localhost:3000
-3. **Swagger (Documentação)**: http://localhost:3000/api-docs
+# Rodar testes em modo headless
+npm run cy:run
 
-> Se a aba não abrir automaticamente, acesse manualmente: http://localhost:3000
+# Rodar testes de API
+npm run test:api
+```
 
 ---
 
 ## Estrutura do projeto
 
-```
-FisioFlow/
-├── src/ (Backend)
+fisioFlow-Api/
+├── src/
 │   ├── app.js
 │   ├── server.js
 │   ├── controllers/
@@ -78,52 +81,57 @@ FisioFlow/
 │   ├── routes/
 │   ├── database/
 │   └── utils/
-│
-├── front-end/ (Frontend)
+├── front-end/
 │   └── public/
 │       ├── index.html
 │       ├── app.js
 │       └── styles.css
-│
 ├── cypress/
 ├── docs/
 ├── postman/
+├── .env.example
+├── cypress.config.js
 ├── package.json
 └── README.md
-```
-
 
 ---
 
 ## Arquitetura
-
 Request → Routes → Controllers → Services → Response
 
-| Camada       | Responsabilidade              |
-|--------------|-------------------------------|
-| Routes       | Define endpoints              |
-| Controllers  | Requisições HTTP             |
-| Services     | Regras de negócio            |
-| Database     | Memória em tempo de execução  |
+| Camada | Responsabilidade |
+|---|---|
+| Routes | Define os endpoints |
+| Controllers | Processa requisições HTTP |
+| Services | Aplica as regras de negócio |
+| Database | Armazenamento em memória (runtime) |
 
 ---
 
-## API Endpoints
+## Endpoints
 
 ### Pacientes
 
-- POST /patients → Criar paciente  
-- GET /patients → Listar pacientes  
-- PATCH /patients/:id → Atualizar paciente  
-- DELETE /patients/:id → Remover paciente  
-
----
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | /patients | Criar paciente |
+| GET | /patients | Listar pacientes |
+| PATCH | /patients/:id | Atualizar paciente |
+| DELETE | /patients/:id | Remover paciente |
 
 ### Agendamentos
 
-- POST /appointments → Criar agendamento  
-- GET /appointments → Listar agendamentos  
-- GET /appointments/day/:date → Agendamentos por dia  
+| Método | Rota | Descrição |
+|---|---|---|
+| POST | /appointments | Criar agendamento |
+| GET | /appointments | Listar agendamentos |
+| GET | /appointments/day/:date | Agendamentos por dia |
+
+### Utilitário (testes)
+
+| Método | Rota | Descrição |
+|---|---|---|
+| DELETE | /test/reset | Resetar dados em memória |
 
 ---
 
@@ -131,82 +139,21 @@ Request → Routes → Controllers → Services → Response
 
 ### Pacientes
 
-- Nome obrigatório  
-- Apenas letras no nome  
-- Idade entre 1 e 120 anos  
-- Telefone opcional (formato (XX) XXXXX-XXXX)  
-
----
+- Nome obrigatório (somente letras)
+- Idade entre 1 e 120 anos
+- Telefone opcional
 
 ### Agendamentos
 
-- Paciente deve existir  
-- Todos os campos são obrigatórios  
-- Duração maior que zero  
-- Não pode haver conflito de horário  
-- Não permite data passada  
+- Paciente deve existir
+- Todos os campos são obrigatórios
+- Duração maior que zero
+- Não permite data passada
+- Não permite conflito de horário
 
----
+**Regra de conflito:**
 
-### Conflito de horário
-
-Um agendamento não pode ser criado quando o horário informado se sobrepõe a outro agendamento já existente no mesmo dia.
-
-A regra de conflito é:
-
-newStart < existingEnd AND newEnd > existingStart
-
-Se a condição for verdadeira, o sistema bloqueia o agendamento e retorna:
-
-Resposta:
-409 Conflict - Schedule conflict detected
-
----
-
-## Testes
-
-### Tipos
-
-- Testes de API  
-- Testes de regras de negócio  
-- Testes E2E (Cypress)  
-
----
-
-### Executar testes
-
-```bash
-npm run cy:open
-npm run cy:run
-```
-
----
-
-## Troubleshooting
-
-### Porta em uso (Windows)
-
-```bash
-netstat -ano | findstr :3000
-taskkill /PID <PID> /F
-````
-### Erro no frontend (Failed to fetch)
-
-- Verificar se backend está rodando
-- Confirmar URL: http://localhost:3000
-- Verificar CORS
-
----
-
-## Melhorias futuras
-
-- Banco de dados (PostgreSQL ou MongoDB)
-- Autenticação JWT
-- Docker
-- CI/CD com GitHub Actions
-- Deploy em nuvem
-- Testes de contrato
-
+- Um agendamento é bloqueado quando o horário informado se sobrepõe a outro já existente no mesmo dia, retornando 409 Conflict.
 ---
 
 ## Tecnologias
@@ -215,7 +162,7 @@ taskkill /PID <PID> /F
 
 - Node.js
 - Express
-- Swagger
+- Swagger UI Express + YAML JS
 - CORS
 
 ### Frontend
@@ -229,6 +176,34 @@ taskkill /PID <PID> /F
 - Cypress
 - Postman
 - Mocha / Chai / Supertest
+
+---
+
+## Troubleshooting
+
+**Porta em uso (Windows)**
+
+```bash
+netstat -ano | findstr :3000
+taskkill /PID <PID> /F
+```
+
+**Erro: Failed to fetch**
+
+- Verificar se o backend está rodando
+- Confirmar URL: http://localhost:3000
+- Verificar CORS
+
+---
+
+## Melhorias futuras
+
+- Banco de dados (PostgreSQL ou MongoDB) — atualmente os dados são armazenados em memória
+- Autenticação JWT
+- Docker
+- CI/CD com GitHub Actions
+- Deploy em nuvem
+- Testes de contrato
 
 ---
 

@@ -119,13 +119,15 @@ Request → Routes → Controllers → Services → Response
 | PATCH | /patients/:id | Atualizar paciente |
 | DELETE | /patients/:id | Remover paciente |
 
-### Agendamentos
+### Agendamento
 
 | Método | Rota | Descrição |
-|---|---|---|
-| POST | /appointments | Criar agendamento |
-| GET | /appointments | Listar agendamentos |
-| GET | /appointments/day/:date | Agendamentos por dia |
+|--------|------|------------|
+| POST   | /appointments | Criar agendamento |
+| GET    | /appointments | Listar agendamentos |
+| GET    | /appointments/day/:date | Agendamentos por dia |
+| PATCH  | /appointments/:id | Atualizar agendamento |
+| DELETE | /appointments/:id | Remover agendamento |
 
 ### Utilitário (testes)
 
@@ -142,6 +144,7 @@ Request → Routes → Controllers → Services → Response
 - Nome obrigatório (somente letras)
 - Idade entre 1 e 120 anos
 - Telefone opcional
+- Diagnóstico opcional
 
 ### Agendamentos
 

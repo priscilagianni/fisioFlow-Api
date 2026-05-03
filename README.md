@@ -6,7 +6,11 @@
 [![License](https://img.shields.io/badge/License-MIT-yellow)](#licença)
 
 ---
+## Documentação completa
 
+A documentação do projeto está organizada na **[Wiki do repositório](https://github.com/priscilagianni/fisioFlow-Api/wiki)**, cobrindo todo o processo: do produto à evidência de execução.
+
+---
 ## Sobre o projeto
 
 Sistema fullstack para gerenciamento de pacientes e agendamentos de fisioterapia.

@@ -1,20 +1,20 @@
 {
   "stats": {
-    "suites": 4,
+    "suites": 1,
     "tests": 17,
     "passes": 17,
     "pending": 0,
     "failures": 0,
-    "start": "2026-05-03T18:34:50.718Z",
-    "end": "2026-05-03T18:34:52.666Z",
-    "duration": 1948,
     "testsRegistered": 17,
     "passPercent": 100,
     "pendingPercent": 0,
     "other": 0,
     "hasOther": false,
     "skipped": 0,
-    "hasSkipped": false
+    "hasSkipped": false,
+    "start": "2026-05-03T18:34:50.718Z",
+    "end": "2026-05-03T18:34:52.666Z",
+    "duration": 1948
   },
   "results": [
     {

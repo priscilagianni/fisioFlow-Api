@@ -10,7 +10,7 @@
     "full-stack": "npm run dev",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "test:report": "mochawesome-merge cypress/reports/*.json > cypress/reports/output.json && mochawesome-report-generator cypress/reports/output.json -f report -o cypress/reports",
+   "test:report": "mochawesome-merge cypress/reports/*.json -o cypress/reports/output.json && npx mochawesome-report-generator cypress/reports/output.json -f report -o cypress/reports",
     "test:api": "mocha tests/api/**/*.test.js"
   },
   "keywords": [

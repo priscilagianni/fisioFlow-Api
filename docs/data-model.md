@@ -88,4 +88,4 @@ newStart < existingEnd AND newEnd > existingStart
 | 200 | Operações de consulta realizadas com sucesso |
 | 400 | Erro de validação (dados inválidos) |
 | 409 | Conflito de horário detectado |
-| 404 | Paciente não encontrado |
+| 404 | Recurso não encontrado (paciente ou agendamento) |
